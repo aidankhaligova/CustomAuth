@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System;
 using System.Security.Claims;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace CustomAuth.Auth
 {
@@ -47,10 +48,11 @@ namespace CustomAuth.Auth
                 {
                     // convert the input token down from Base64 into normal
                     byte[] fromBase64String = Convert.FromBase64String(token);
-                    var parsedToken = Encoding.UTF8.GetString(fromBase64String);
+                    //var parsedToken = Encoding.UTF8.GetString(fromBase64String);
 
                     // deserialize the JSON string obtained from the byte array
-                    model = JsonConvert.DeserializeObject<TokenModel>(parsedToken);
+                    //model = JsonConvert.DeserializeObject<TokenModel>(parsedToken);
+                    model = Deserialize(fromBase64String);
                 }
                 catch (System.Exception ex)
                 {
@@ -66,13 +68,19 @@ namespace CustomAuth.Auth
                     // create claims array from the model
                     var claims = new[] {
                     new Claim(ClaimTypes.NameIdentifier, model.UserId.ToString()),
-                    new Claim(ClaimTypes.Email, model.EmailAddress),
+           
+                      new Claim(ClaimTypes.Role, "admin"),
                     new Claim(ClaimTypes.Name, model.Name) };
 
                     // generate claimsIdentity on the name of the class
                     var claimsIdentity = new ClaimsIdentity(claims,
                                 nameof(MyAuthHandler));
 
+                    bool isOk = CheckUser(model.UserId);
+                    if (!isOk)
+                    {
+                        return Task.FromResult(AuthenticateResult.Fail("UnAuthorize"));
+                    }
                     // generate AuthenticationTicket from the Identity
                     // and current authentication scheme
                     var ticket = new AuthenticationTicket(
@@ -87,6 +95,22 @@ namespace CustomAuth.Auth
             // return failure
             // with an optional message
             return Task.FromResult(AuthenticateResult.Fail("Model is Empty"));
+        }
+
+        public bool CheckUser(int id) => id == 1;
+        public static TokenModel Deserialize(byte[] data)
+        {
+            TokenModel result = new();
+            using (MemoryStream m = new MemoryStream(data))
+            {
+                using (BinaryReader reader = new BinaryReader(m))
+                {
+                    result.UserId = reader.ReadInt32();
+                    result.Name = reader.ReadString();
+                    result.Role = reader.ReadString();
+                }
+            }
+            return result;
         }
     }
 }

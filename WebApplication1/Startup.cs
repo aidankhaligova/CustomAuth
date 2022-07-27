@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CustomAuth.Auth;
+using CustomAuth.Authentication;
 
 namespace CustomAuth
 {
@@ -62,6 +63,8 @@ namespace CustomAuth
                 options => options.DefaultScheme = AuthSchemeConstants.MyAuthScheme)
                 .AddScheme<MyAuthSchemeOptions, MyAuthHandler>(
                     AuthSchemeConstants.MyAuthScheme, options => { });
+
+            services.AddScoped<IJWTAuth, JWTAuth>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

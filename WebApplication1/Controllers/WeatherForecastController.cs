@@ -10,6 +10,8 @@ namespace CustomAuth.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(AuthenticationSchemes
+            = AuthSchemeConstants.MyAuthScheme)]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -25,8 +27,6 @@ namespace CustomAuth.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes
-            = AuthSchemeConstants.MyAuthScheme)]
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();
