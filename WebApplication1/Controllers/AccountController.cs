@@ -19,11 +19,8 @@ namespace CustomAuth.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        //JWTAuth _auth;
-       
-        public AccountController(/*JWTAuth auth*/)
+        public AccountController()
         {
-           // _auth = auth;
         }
 
         [HttpPost]
@@ -35,14 +32,6 @@ namespace CustomAuth.Controllers
             }
             else
             {
-                //var claims = new List<Claim>()
-                //{
-                //    new Claim(ClaimTypes.Name, uld.UserName),
-                //    new Claim(ClaimTypes.Role, "standard_user"),
-                //    new Claim(ClaimTypes.AuthenticationInstant, "passlogin")
-                //};
-                //var tokenString = GenerateToken(claims);
-
                 TokenModel tokenModel = new()
                 {
                     UserId=2,
