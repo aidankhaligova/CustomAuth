@@ -1,17 +1,9 @@
 ﻿using CustomAuth.Auth;
 using CustomAuth.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace CustomAuth.Controllers
 {
@@ -19,8 +11,10 @@ namespace CustomAuth.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        public AccountController()
+        private readonly IJWTAuth _jwtAuth;
+        public AccountController(IJWTAuth jwtAuth)
         {
+            _jwtAuth = jwtAuth;
         }
 
         [HttpPost]
@@ -34,13 +28,19 @@ namespace CustomAuth.Controllers
             {
                 TokenModel tokenModel = new()
                 {
-                    UserId=2,
+                    UserId=1,
                     Name="Aydan",
                     Role="admin"
                 };
-                var json=JsonSerializer.Serialize(tokenModel);
-                var gg = Convert.ToBase64String(Serialize(tokenModel));
-                return Ok(gg);
+                var token = _jwtAuth.GenerateToken(new List<Claim>()
+                {
+                    new Claim(ClaimTypes.Name,tokenModel.Name),
+                    new Claim(ClaimTypes.NameIdentifier,tokenModel.UserId.ToString()),
+                    new Claim(ClaimTypes.Role,tokenModel.Role)
+                });
+                //var json=JsonSerializer.Serialize(tokenModel);
+                //var gg = Convert.ToBase64String(Serialize(tokenModel));
+                return Ok(token);
             }
         }
         private byte[] Serialize(TokenModel tokenModel)

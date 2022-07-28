@@ -7,9 +7,11 @@ using System.Text.RegularExpressions;
 using System.Text;
 using System.Threading.Tasks;
 using System;
+using System.Linq;
 using System.Security.Claims;
 using Newtonsoft.Json;
 using System.IO;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace CustomAuth.Auth
 {
@@ -27,7 +29,7 @@ namespace CustomAuth.Auth
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            TokenModel model;
+            TokenModel model = new();
 
             // validation comes in here
             if (!Request.Headers.ContainsKey(HeaderNames.Authorization))
@@ -46,13 +48,26 @@ namespace CustomAuth.Auth
 
                 try
                 {
-                    // convert the input token down from Base64 into normal
-                    byte[] fromBase64String = Convert.FromBase64String(token);
+                    #region base64
+                    //byte[] fromBase64String = Convert.FromBase64String(token);
                     //var parsedToken = Encoding.UTF8.GetString(fromBase64String);
-
-                    // deserialize the JSON string obtained from the byte array
                     //model = JsonConvert.DeserializeObject<TokenModel>(parsedToken);
-                    model = Deserialize(fromBase64String);
+                    //model = Deserialize(fromBase64String);
+                    #endregion
+
+                    var handler = new JwtSecurityTokenHandler();
+                    if (handler.CanReadToken(token))
+                    {
+                        var jsonToken = handler.ReadToken(token);
+                        var tokenS = jsonToken as JwtSecurityToken;
+                        model.UserId = Convert.ToInt32(tokenS.Claims.FirstOrDefault(x => x.Type == "nameid").Value);
+                        model.Name = tokenS.Claims.FirstOrDefault(x => x.Type == "unique_name").Value;
+                        model.Role = tokenS.Claims.FirstOrDefault(x => x.Type == "role").Value;
+                    }
+                    else
+                    {
+                        return Task.FromResult(AuthenticateResult.Fail("TokenParseException"));
+                    }
                 }
                 catch (System.Exception ex)
                 {
