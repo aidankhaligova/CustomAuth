@@ -1,11 +1,4 @@
-﻿using CustomAuth.Auth;
-using CustomAuth.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.IO;
-using System.Security.Claims;
-
-namespace CustomAuth.Controllers
+﻿namespace CustomAuth.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -32,28 +25,22 @@ namespace CustomAuth.Controllers
                     Name="Aydan",
                     Role="admin"
                 };
+
+                #region jwt
                 var token = _jwtAuth.GenerateToken(new List<Claim>()
                 {
                     new Claim(ClaimTypes.Name,tokenModel.Name),
                     new Claim(ClaimTypes.NameIdentifier,tokenModel.UserId.ToString()),
                     new Claim(ClaimTypes.Role,tokenModel.Role)
                 });
+                #endregion
+
+                #region base64
                 //var json=JsonSerializer.Serialize(tokenModel);
                 //var gg = Convert.ToBase64String(Serialize(tokenModel));
+                #endregion
+
                 return Ok(token);
-            }
-        }
-        private byte[] Serialize(TokenModel tokenModel)
-        {
-            using (MemoryStream m = new MemoryStream())
-            {
-                using (BinaryWriter writer = new BinaryWriter(m))
-                {
-                    writer.Write(tokenModel.UserId);
-                    writer.Write(tokenModel.Name);
-                    writer.Write(tokenModel.Role);
-                }
-                return m.ToArray();
             }
         }
         private bool IsValid(string username, string pass) =>

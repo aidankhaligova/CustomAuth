@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-
-namespace CustomAuth.Auth
+﻿namespace CustomAuth.Auth
 {
     public class MyAuthSchemeOptions
         : AuthenticationSchemeOptions

@@ -1,5 +1,3 @@
-using System;
-
 namespace CustomAuth
 {
     public class WeatherForecast

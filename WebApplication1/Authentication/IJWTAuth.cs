@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-
-namespace CustomAuth.Authentication
+﻿namespace CustomAuth.Authentication
 {
     public interface IJWTAuth
     {

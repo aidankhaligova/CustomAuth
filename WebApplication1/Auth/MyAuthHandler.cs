@@ -1,19 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
-using System.Text.Encodings.Web;
-using System.Text.RegularExpressions;
-using System.Text;
-using System.Threading.Tasks;
-using System;
-using System.Linq;
-using System.Security.Claims;
-using Newtonsoft.Json;
-using System.IO;
-using System.IdentityModel.Tokens.Jwt;
-
-namespace CustomAuth.Auth
+﻿namespace CustomAuth.Auth
 {
     public class MyAuthHandler
             : AuthenticationHandler<MyAuthSchemeOptions>
@@ -31,7 +16,6 @@ namespace CustomAuth.Auth
         {
             TokenModel model = new();
 
-            // validation comes in here
             if (!Request.Headers.ContainsKey(HeaderNames.Authorization))
             {
                 return Task.FromResult(AuthenticateResult.Fail("Header Not Found."));
@@ -42,19 +26,16 @@ namespace CustomAuth.Auth
 
             if (tokenMatch.Success)
             {
-                // the token is captured in this group
-                // as declared in the Regex
                 var token = tokenMatch.Groups["token"].Value;
 
                 try
                 {
                     #region base64
                     //byte[] fromBase64String = Convert.FromBase64String(token);
-                    //var parsedToken = Encoding.UTF8.GetString(fromBase64String);
-                    //model = JsonConvert.DeserializeObject<TokenModel>(parsedToken);
                     //model = Deserialize(fromBase64String);
                     #endregion
 
+                    #region jwt
                     var handler = new JwtSecurityTokenHandler();
                     if (handler.CanReadToken(token))
                     {
@@ -68,6 +49,7 @@ namespace CustomAuth.Auth
                     {
                         return Task.FromResult(AuthenticateResult.Fail("TokenParseException"));
                     }
+                    #endregion
                 }
                 catch (System.Exception ex)
                 {
@@ -75,19 +57,13 @@ namespace CustomAuth.Auth
                     return Task.FromResult(AuthenticateResult.Fail("TokenParseException"));
                 }
 
-                // success branch
-                // generate authTicket
-                // authenticate the request
                 if (model != null)
                 {
-                    // create claims array from the model
                     var claims = new[] {
                     new Claim(ClaimTypes.NameIdentifier, model.UserId.ToString()),
-           
-                      new Claim(ClaimTypes.Role, "admin"),
+                    new Claim(ClaimTypes.Role, "admin"),
                     new Claim(ClaimTypes.Name, model.Name) };
 
-                    // generate claimsIdentity on the name of the class
                     var claimsIdentity = new ClaimsIdentity(claims,
                                 nameof(MyAuthHandler));
 
@@ -96,19 +72,12 @@ namespace CustomAuth.Auth
                     {
                         return Task.FromResult(AuthenticateResult.Fail("UnAuthorize"));
                     }
-                    // generate AuthenticationTicket from the Identity
-                    // and current authentication scheme
                     var ticket = new AuthenticationTicket(
                         new ClaimsPrincipal(claimsIdentity), this.Scheme.Name);
 
-                    // pass on the ticket to the middleware
                     return Task.FromResult(AuthenticateResult.Success(ticket));
                 }
             }
-
-            // failure branch
-            // return failure
-            // with an optional message
             return Task.FromResult(AuthenticateResult.Fail("Model is Empty"));
         }
 
