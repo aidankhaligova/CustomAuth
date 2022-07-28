@@ -1,3 +1,5 @@
+using CustomAuth.Helpers;
+
 namespace CustomAuth;
 public class Startup
 {
@@ -70,5 +72,7 @@ public class Startup
         {
             endpoints.MapControllers();
         });
+
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
     }
 }

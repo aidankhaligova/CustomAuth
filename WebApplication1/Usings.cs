@@ -23,3 +23,7 @@ global using Microsoft.Extensions.Hosting;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.OpenApi.Models;
+global using System.Net;
+global using System.Text.Json;
+global using Microsoft.AspNetCore.Http;
+global using CustomAuth.Models;
