@@ -1,9 +1,7 @@
-﻿namespace CustomAuth.Auth
+﻿namespace CustomAuth.Auth;
+public class TokenModel
 {
-    public class TokenModel
-    {
-        public int UserId { get; set; }
-        public string Name { get; set; }
-        public string Role { get; set; }
-    }
+    public int UserId { get; set; }
+    public string Name { get; set; }
+    public string Role { get; set; }
 }

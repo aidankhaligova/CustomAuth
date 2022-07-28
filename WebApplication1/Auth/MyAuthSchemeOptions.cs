@@ -1,6 +1,4 @@
-﻿namespace CustomAuth.Auth
-{
-    public class MyAuthSchemeOptions
-        : AuthenticationSchemeOptions
-    { }
-}
+﻿namespace CustomAuth.Auth;
+public class MyAuthSchemeOptions
+    : AuthenticationSchemeOptions
+{ }

@@ -1,8 +1,6 @@
-﻿namespace CustomAuth.Authentication
+﻿namespace CustomAuth.Authentication;
+public interface IJWTAuth
 {
-    public interface IJWTAuth
-    {
-        string GenerateToken(IEnumerable<Claim> claims);
-        bool ValidatedToken(string incomingToken);
-    }
+    string GenerateToken(IEnumerable<Claim> claims);
+    bool ValidatedToken(string incomingToken);
 }
