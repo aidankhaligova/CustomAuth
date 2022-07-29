@@ -3,10 +3,10 @@
 [ApiController]
 public class AccountController : ControllerBase
 {
-    private readonly IJWTAuth _jwtAuth;
-    public AccountController(IJWTAuth jwtAuth)
+    private readonly IJwtHandler _jwtHandler;
+    public AccountController(IJwtHandler jwtHandler)
     {
-        _jwtAuth = jwtAuth;
+        _jwtHandler = jwtHandler;
     }
 
     [HttpPost]
@@ -26,17 +26,27 @@ public class AccountController : ControllerBase
             };
 
             #region jwt
-            var token = _jwtAuth.GenerateToken(new List<Claim>()
-            {
-                new Claim(ClaimTypes.Name,tokenModel.Name),
-                new Claim(ClaimTypes.NameIdentifier,tokenModel.UserId.ToString()),
-                new Claim(ClaimTypes.Role,tokenModel.Role)
-            });
+            //var token = _jwtAuth.GenerateToken(new List<Claim>()
+            //{
+            //    new Claim(ClaimTypes.Name,tokenModel.Name),
+            //    new Claim(ClaimTypes.NameIdentifier,tokenModel.UserId.ToString()),
+            //    new Claim(ClaimTypes.Role,tokenModel.Role)
+            //});
             #endregion
 
             #region base64
             //var json=JsonSerializer.Serialize(tokenModel);
             //var gg = Convert.ToBase64String(Serialize(tokenModel));
+            #endregion
+
+            #region rs256
+            var claims = new JwtCustomClaims
+            {
+                FirstName = "Vynn",
+                LastName = "Durano",
+                Email = "whatever@email.com"
+            };
+            var token = _jwtHandler.CreateToken(claims);
             #endregion
 
             return Ok(token);

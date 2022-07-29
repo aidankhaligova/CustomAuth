@@ -27,3 +27,8 @@ global using System.Net;
 global using System.Text.Json;
 global using Microsoft.AspNetCore.Http;
 global using CustomAuth.Models;
+global using Newtonsoft.Json.Linq;
+global using Org.BouncyCastle.Crypto;
+global using Org.BouncyCastle.Crypto.Parameters;
+global using Org.BouncyCastle.Security;
+global using System.Security.Cryptography;

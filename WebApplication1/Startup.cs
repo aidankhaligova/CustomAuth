@@ -50,6 +50,7 @@ public class Startup
                 AuthSchemeConstants.MyAuthScheme, options => { });
 
         services.AddScoped<IJWTAuth, JWTAuth>();
+        services.AddTransient<IJwtHandler, JwtHandler>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

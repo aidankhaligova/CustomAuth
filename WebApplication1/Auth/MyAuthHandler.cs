@@ -1,4 +1,7 @@
-﻿namespace CustomAuth.Auth;
+﻿using CustomAuth.Helpers;
+using Newtonsoft.Json.Linq;
+
+namespace CustomAuth.Auth;
 public class MyAuthHandler
         : AuthenticationHandler<MyAuthSchemeOptions>
 {
@@ -10,7 +13,8 @@ public class MyAuthHandler
         : base(options, logger, encoder, clock)
     {
     }
-
+    
+    private const string publicKey = "w7Zdfmece8iaB0kiTY8pCtiBtzbptJmP28nSWwtdjRu0f2GFpajvWE4VhfJAjEsOcwYzay7XGN0b-X84BfC8hmCTOj2b2eHT7NsZegFPKRUQzJ9wW8ipn_aDJWMGDuB1XyqT1E7DYqjUCEOD1b4FLpy_xPn6oV_TYOfQ9fZdbE5HGxJUzekuGcOKqOQ8M7wfYHhHHLxGpQVgL0apWuP2gDDOdTtpuld4D2LK1MZK99s9gaSjRHE8JDb1Z4IGhEcEyzkxswVdPndUWzfvWBBWXWxtSUvQGBRkuy1BHOa4sP6FKjWEeeF7gm7UMs2Nm2QUgNZw6xvEDGaLk4KASdIxRQ";
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         TokenModel model = new();
@@ -35,19 +39,23 @@ public class MyAuthHandler
                 #endregion
 
                 #region jwt
-                var handler = new JwtSecurityTokenHandler();
-                if (handler.CanReadToken(token))
-                {
-                    var jsonToken = handler.ReadToken(token);
-                    var tokenS = jsonToken as JwtSecurityToken;
-                    model.UserId = Convert.ToInt32(tokenS.Claims.FirstOrDefault(x => x.Type == "nameid").Value);
-                    model.Name = tokenS.Claims.FirstOrDefault(x => x.Type == "unique_name").Value;
-                    model.Role = tokenS.Claims.FirstOrDefault(x => x.Type == "role").Value;
-                }
-                else
-                {
-                    return Task.FromResult(AuthenticateResult.Fail("TokenParseException"));
-                }
+                //var handler = new JwtSecurityTokenHandler();
+                //if (handler.CanReadToken(token))
+                //{
+                //    var jsonToken = handler.ReadToken(token);
+                //    var tokenS = jsonToken as JwtSecurityToken;
+                //    model.UserId = Convert.ToInt32(tokenS.Claims.FirstOrDefault(x => x.Type == "nameid").Value);
+                //    model.Name = tokenS.Claims.FirstOrDefault(x => x.Type == "unique_name").Value;
+                //    model.Role = tokenS.Claims.FirstOrDefault(x => x.Type == "role").Value;
+                //}
+                //else
+                //{
+                //    return Task.FromResult(AuthenticateResult.Fail("TokenParseException"));
+                //}
+                #endregion
+
+                #region rs256
+                var data = DecodeRS256.Decode(token, publicKey, true);
                 #endregion
             }
             catch (System.Exception ex)
