@@ -51,10 +51,6 @@ public static class DecodeRS256
             rsaDeformatter.SetHashAlgorithm("SHA256");
             if (!rsaDeformatter.VerifySignature(hash, FromBase64Url(parts[2])))
                 throw new ApplicationException(string.Format("Invalid signature"));
-
-
-
-
         }
 
         return payloadData.ToString();
@@ -83,6 +79,4 @@ public static class DecodeRS256
                               .Replace("-", "+");
         return Convert.FromBase64String(base64);
     }
-
-
 }

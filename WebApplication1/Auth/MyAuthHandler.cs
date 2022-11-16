@@ -1,17 +1,19 @@
 ﻿using CustomAuth.Helpers;
-using Newtonsoft.Json.Linq;
 
 namespace CustomAuth.Auth;
 public class MyAuthHandler
         : AuthenticationHandler<MyAuthSchemeOptions>
 {
+    private readonly IJwtHandler _jwtHandler;
     public MyAuthHandler(
+        IJwtHandler jwtHandler,
         IOptionsMonitor<MyAuthSchemeOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
         ISystemClock clock)
         : base(options, logger, encoder, clock)
     {
+        _jwtHandler = jwtHandler;   
     }
     
     private const string publicKey = "w7Zdfmece8iaB0kiTY8pCtiBtzbptJmP28nSWwtdjRu0f2GFpajvWE4VhfJAjEsOcwYzay7XGN0b-X84BfC8hmCTOj2b2eHT7NsZegFPKRUQzJ9wW8ipn_aDJWMGDuB1XyqT1E7DYqjUCEOD1b4FLpy_xPn6oV_TYOfQ9fZdbE5HGxJUzekuGcOKqOQ8M7wfYHhHHLxGpQVgL0apWuP2gDDOdTtpuld4D2LK1MZK99s9gaSjRHE8JDb1Z4IGhEcEyzkxswVdPndUWzfvWBBWXWxtSUvQGBRkuy1BHOa4sP6FKjWEeeF7gm7UMs2Nm2QUgNZw6xvEDGaLk4KASdIxRQ";
@@ -55,7 +57,9 @@ public class MyAuthHandler
                 #endregion
 
                 #region rs256
+                var con = _jwtHandler.ValidateToken(token);
                 var data = DecodeRS256.Decode(token, publicKey, true);
+                
                 #endregion
             }
             catch (System.Exception ex)
@@ -87,7 +91,6 @@ public class MyAuthHandler
         }
         return Task.FromResult(AuthenticateResult.Fail("Model is Empty"));
     }
-
     public bool CheckUser(int id) => id == 1;
     public static TokenModel Deserialize(byte[] data)
     {

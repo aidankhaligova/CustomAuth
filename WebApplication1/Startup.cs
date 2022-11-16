@@ -51,6 +51,7 @@ public class Startup
 
         services.AddScoped<IJWTAuth, JWTAuth>();
         services.AddTransient<IJwtHandler, JwtHandler>();
+        services.Configure<ExternalClientJsonConfiguration>(Configuration.GetSection("ExternalClientServer"));
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
